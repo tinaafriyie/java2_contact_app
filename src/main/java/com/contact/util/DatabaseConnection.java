@@ -1,4 +1,4 @@
-package main.java.com.contact.util;
+package com.contact.util;
 
 import java.io.*;
 import java.sql.*;

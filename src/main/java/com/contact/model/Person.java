@@ -1,4 +1,4 @@
-package main.java.com.contact.model;
+package com.contact.model;
 
 import java.time.LocalDate;
 import java.util.Objects;

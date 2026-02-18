@@ -1,11 +1,14 @@
 
-package test.java.com.contact;
+package com.contact;
 
-import main.java.com.contact.model.Person;
+import com.contact.dao.*;
+import com.contact.model.Person;
 import org.junit.jupiter.api.*;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -16,7 +19,7 @@ class PersonDAOTest {
     @BeforeAll
     static void setUp() {
         personDAO = new PersonDAOImpl();
-        System.out.println("🧪 Starting tests...");
+        System.out.println(" Starting tests...");
     }
 
     @Test
@@ -29,7 +32,7 @@ class PersonDAOTest {
         
         Person created = personDAO.create(testPerson);
         assertNotNull(created.getIdperson());
-        System.out.println("✅ Test 1 passed");
+        System.out.println(" Test 1 passed");
     }
 
     @Test
@@ -38,7 +41,7 @@ class PersonDAOTest {
         Optional<Person> found = personDAO.findById(testPerson.getIdperson());
         assertTrue(found.isPresent());
         assertEquals("TestLast", found.get().getLastname());
-        System.out.println("✅ Test 2 passed");
+        System.out.println(" Test 2 passed");
     }
 
     @Test
@@ -46,7 +49,7 @@ class PersonDAOTest {
     void testFindAll() throws SQLException {
         List<Person> persons = personDAO.findAll();
         assertTrue(persons.size() > 0);
-        System.out.println("✅ Test 3 passed - Found " + persons.size() + " persons");
+        System.out.println(" Test 3 passed - Found " + persons.size() + " persons");
     }
 
     @Test
@@ -55,7 +58,7 @@ class PersonDAOTest {
         testPerson.setPhoneNumber("555-9999");
         boolean updated = personDAO.update(testPerson);
         assertTrue(updated);
-        System.out.println("✅ Test 4 passed");
+        System.out.println(" Test 4 passed");
     }
 
     @Test
@@ -63,7 +66,7 @@ class PersonDAOTest {
     void testSearch() throws SQLException {
         List<Person> results = personDAO.searchByName("Test");
         assertTrue(results.size() > 0);
-        System.out.println("✅ Test 5 passed");
+        System.out.println(" Test 5 passed");
     }
 
     @Test
@@ -71,6 +74,6 @@ class PersonDAOTest {
     void testDelete() throws SQLException {
         boolean deleted = personDAO.delete(testPerson.getIdperson());
         assertTrue(deleted);
-        System.out.println("✅ Test 6 passed");
+        System.out.println(" Test 6 passed");
     }
 }

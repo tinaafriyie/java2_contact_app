@@ -1,6 +1,6 @@
-package main.java.com.contact.dao;
+package com.contact.dao;
 
-import main.java.com.contact.model.Person;
+import com.contact.model.Person;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;

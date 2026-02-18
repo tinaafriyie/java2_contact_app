@@ -1,8 +1,9 @@
-package main.java.com.contact.dao;
+package com.contact.dao;
 
-import main.java.com.contact.model.Person;
-import main.java.com.contact.util.DatabaseConnection;
+import com.contact.model.Person;
+import com.contact.util.*;
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -143,9 +144,15 @@ public class PersonDAOImpl implements PersonDAO {
         person.setAddress(rs.getString("address"));
         person.setEmailAddress(rs.getString("email_address"));
         
-        Date birthDate = rs.getDate("birth_date");
-        if (birthDate != null) {
-            person.setBirthDate(birthDate.toLocalDate());
+        // Safer date handling for SQLite
+        String birthDateStr = rs.getString("birth_date");
+        if (birthDateStr != null && !birthDateStr.isEmpty()) {
+            try {
+                person.setBirthDate(LocalDate.parse(birthDateStr));
+            } catch (Exception e) {
+                // If parsing fails, leave birth_date as null
+                System.err.println("Could not parse date: " + birthDateStr);
+            }
         }
         return person;
     }
