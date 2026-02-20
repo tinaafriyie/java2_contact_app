@@ -1,4 +1,7 @@
-com\contact\dao\PersonDAO.class
-com\contact\dao\PersonDAOImpl.class
-com\contact\model\Person.class
-com\contact\util\DatabaseConnection.class
+com/contact/ui/PersonFormController.class
+com/contact/model/Person.class
+com/contact/dao/PersonDAO.class
+com/contact/util/DatabaseConnection.class
+com/contact/App.class
+com/contact/ui/PersonFormController$1.class
+com/contact/dao/PersonDAOImpl.class
