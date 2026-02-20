@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox styleClass="form-root" stylesheets="@../style.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
+
+   <!-- Header -->
+   <VBox styleClass="form-header" spacing="2">
+      <Label fx:id="formTitle" styleClass="form-title" text="Add New Person" />
+      <Label fx:id="formSubtitle" styleClass="form-subtitle" text="Fill in the details below" />
+   </VBox>
+
+   <!-- Form body -->
+   <VBox styleClass="form-body" VBox.vgrow="ALWAYS">
+      <padding>
+         <Insets bottom="24" left="24" right="24" top="24" />
+      </padding>
+
+      <GridPane hgap="14" vgap="14" minWidth="440">
+         <columnConstraints>
+            <ColumnConstraints minWidth="100" />
+            <ColumnConstraints hgrow="ALWAYS" minWidth="260" />
+         </columnConstraints>
+         <rowConstraints>
+            <RowConstraints /> <!-- row 0: section -->
+            <RowConstraints /> <!-- row 1 -->
+            <RowConstraints /> <!-- row 2 -->
+            <RowConstraints /> <!-- row 3 -->
+            <RowConstraints /> <!-- row 4 -->
+            <RowConstraints /> <!-- row 5: section -->
+            <RowConstraints /> <!-- row 6 -->
+            <RowConstraints /> <!-- row 7 -->
+            <RowConstraints /> <!-- row 8 -->
+         </rowConstraints>
+
+         <!-- Personal Information -->
+         <Label styleClass="section-title" text="PERSONAL INFORMATION" GridPane.columnSpan="2" GridPane.rowIndex="0" />
+
+         <Label styleClass="form-label" text="Last Name *" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+         <TextField fx:id="lastNameField" styleClass="form-field" promptText="Enter last name" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+
+         <Label styleClass="form-label" text="First Name *" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+         <TextField fx:id="firstNameField" styleClass="form-field" promptText="Enter first name" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+
+         <Label styleClass="form-label" text="Nickname *" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+         <TextField fx:id="nicknameField" styleClass="form-field" promptText="Enter nickname" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+
+         <Label styleClass="form-label" text="Birth Date" GridPane.columnIndex="0" GridPane.rowIndex="4" />
+         <DatePicker fx:id="birthDatePicker" styleClass="form-field" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+
+         <!-- Contact Details -->
+         <Label styleClass="section-title" text="CONTACT DETAILS" GridPane.columnSpan="2" GridPane.rowIndex="5" />
+
+         <Label styleClass="form-label" text="Phone" GridPane.columnIndex="0" GridPane.rowIndex="6" />
+         <TextField fx:id="phoneField" styleClass="form-field" promptText="e.g. 555-0101" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+
+         <Label styleClass="form-label" text="Email" GridPane.columnIndex="0" GridPane.rowIndex="7" />
+         <TextField fx:id="emailField" styleClass="form-field" promptText="e.g. john@email.com" GridPane.columnIndex="1" GridPane.rowIndex="7" />
+
+         <Label styleClass="form-label" text="Address" GridPane.columnIndex="0" GridPane.rowIndex="8" />
+         <TextField fx:id="addressField" styleClass="form-field" promptText="e.g. 123 Main St" GridPane.columnIndex="1" GridPane.rowIndex="8" />
+      </GridPane>
+   </VBox>
+
+   <!-- Button bar -->
+   <HBox alignment="CENTER_RIGHT" spacing="10">
+      <padding>
+         <Insets bottom="18" left="24" right="24" top="18" />
+      </padding>
+      <Button fx:id="clearButton" styleClass="btn-clear" text="Clear" />
+      <Region HBox.hgrow="ALWAYS" />
+      <Button fx:id="cancelButton" styleClass="btn-cancel" text="Cancel" />
+      <Button fx:id="saveButton" styleClass="btn-save" text="  Add Contact  " />
+   </HBox>
+
+</VBox>

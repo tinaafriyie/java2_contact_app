@@ -1,38 +1,47 @@
 package com.contact.ui;
 
+import java.io.IOException;
+import java.sql.SQLException;
+import java.time.LocalDate;
+
 import com.contact.dao.PersonDAO;
 import com.contact.dao.PersonDAOImpl;
 import com.contact.model.Person;
 
 import javafx.collections.ObservableList;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
-import javafx.scene.layout.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.DatePicker;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
-import java.sql.SQLException;
-import java.time.LocalDate;
-
-// Person 4 — UI forms and CRUD operations
-// Currently calls DAO directly; swap to PersonService when ready
 public class PersonFormController {
 
     private final PersonDAO personDAO;
 
-    private TextField lastNameField;
-    private TextField firstNameField;
-    private TextField nicknameField;
-    private TextField phoneField;
-    private TextField addressField;
-    private TextField emailField;
-    private DatePicker birthDatePicker;
+    @FXML private TextField lastNameField;
+    @FXML private TextField firstNameField;
+    @FXML private TextField nicknameField;
+    @FXML private TextField phoneField;
+    @FXML private TextField addressField;
+    @FXML private TextField emailField;
+    @FXML private DatePicker birthDatePicker;
+    @FXML private Label formTitle;
+    @FXML private Label formSubtitle;
+    @FXML private Button saveButton;
+    @FXML private Button cancelButton;
+    @FXML private Button clearButton;
 
     private ObservableList<Person> personList;
-
     private Integer editingPersonId = null;
+    private Stage formStage;
 
     public PersonFormController() {
         this.personDAO = new PersonDAOImpl();
@@ -46,8 +55,6 @@ public class PersonFormController {
     public void setPersonList(ObservableList<Person> personList) {
         this.personList = personList;
     }
-
-    // --- Public methods (called by main controller) ---
 
     public void showAddForm(Stage ownerStage) {
         editingPersonId = null;
@@ -95,151 +102,50 @@ public class PersonFormController {
         });
     }
 
-    // --- Form window ---
-
     private void showFormWindow(Stage ownerStage, String title, Person existingPerson) {
-        Stage formStage = new Stage();
-        formStage.setTitle(title);
-        formStage.initModality(Modality.APPLICATION_MODAL);
-        if (ownerStage != null) {
-            formStage.initOwner(ownerStage);
-        }
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/PersonForm.fxml"));
+            loader.setController(this);
+            VBox root = loader.load();
 
-        Label titleLabel = new Label(title);
-        titleLabel.getStyleClass().add("form-title");
-        Label subtitleLabel = new Label(existingPerson == null
-                ? "Fill in the details below to add a new contact"
-                : "Modify the contact information");
-        subtitleLabel.getStyleClass().add("form-subtitle");
-        VBox headerBox = new VBox(2, titleLabel, subtitleLabel);
-        headerBox.getStyleClass().add("form-header");
-
-        GridPane grid = buildFormGrid();
-
-        if (existingPerson != null) {
-            populateFields(existingPerson);
-        }
-
-        VBox formBody = new VBox(grid);
-        formBody.getStyleClass().add("form-body");
-
-        Button saveButton = new Button(existingPerson == null ? "  Add Contact  " : "  Save Changes  ");
-        saveButton.getStyleClass().add("btn-save");
-        saveButton.setOnAction(e -> {
-            if (existingPerson == null) {
-                handleAdd(formStage);
-            } else {
-                handleUpdate(formStage);
+            formStage = new Stage();
+            formStage.setTitle(title);
+            formStage.initModality(Modality.APPLICATION_MODAL);
+            if (ownerStage != null) {
+                formStage.initOwner(ownerStage);
             }
-        });
 
-        Button cancelButton = new Button("Cancel");
-        cancelButton.getStyleClass().add("btn-cancel");
-        cancelButton.setOnAction(e -> formStage.close());
+            formTitle.setText(title);
+            if (existingPerson == null) {
+                formSubtitle.setText("Fill in the details below to add a new contact");
+                saveButton.setText("  Add Contact  ");
+            } else {
+                formSubtitle.setText("Modify the contact information");
+                saveButton.setText("  Save Changes  ");
+                populateFields(existingPerson);
+            }
 
-        Button clearButton = new Button("Clear");
-        clearButton.getStyleClass().add("btn-clear");
-        clearButton.setOnAction(e -> clearForm());
+            saveButton.setOnAction(e -> {
+                if (existingPerson == null) {
+                    handleAdd();
+                } else {
+                    handleUpdate();
+                }
+            });
+            cancelButton.setOnAction(e -> formStage.close());
+            clearButton.setOnAction(e -> clearForm());
 
-        Region spacer = new Region();
-        HBox.setHgrow(spacer, Priority.ALWAYS);
+            Scene scene = new Scene(root);
+            formStage.setScene(scene);
+            formStage.setResizable(false);
+            formStage.showAndWait();
 
-        HBox buttonBar = new HBox(10, clearButton, spacer, cancelButton, saveButton);
-        buttonBar.setAlignment(Pos.CENTER_RIGHT);
-        buttonBar.setPadding(new Insets(18, 24, 18, 24));
-
-        VBox content = new VBox(12, formBody);
-        content.setPadding(new Insets(16, 20, 0, 20));
-
-        VBox root = new VBox(headerBox, content, buttonBar);
-        root.getStyleClass().add("form-root");
-
-        Scene scene = new Scene(root);
-        scene.getStylesheets().add(getClass().getResource("/style.css").toExternalForm());
-        formStage.setScene(scene);
-        formStage.setResizable(false);
-        formStage.showAndWait();
-    }
-
-    private GridPane buildFormGrid() {
-        GridPane grid = new GridPane();
-        grid.setHgap(14);
-        grid.setVgap(14);
-        grid.setPadding(new Insets(4));
-        grid.setMinWidth(440);
-
-        ColumnConstraints labelCol = new ColumnConstraints();
-        labelCol.setMinWidth(100);
-        ColumnConstraints fieldCol = new ColumnConstraints();
-        fieldCol.setHgrow(Priority.ALWAYS);
-        fieldCol.setMinWidth(260);
-        grid.getColumnConstraints().addAll(labelCol, fieldCol);
-
-        lastNameField   = new TextField();
-        firstNameField  = new TextField();
-        nicknameField   = new TextField();
-        phoneField      = new TextField();
-        addressField    = new TextField();
-        emailField      = new TextField();
-        birthDatePicker = new DatePicker();
-
-        for (TextField tf : new TextField[]{lastNameField, firstNameField, nicknameField,
-                phoneField, addressField, emailField}) {
-            tf.getStyleClass().add("form-field");
-            tf.setMaxWidth(Double.MAX_VALUE);
+        } catch (IOException e) {
+            showAlert(Alert.AlertType.ERROR, "Error", "Could not load form: " + e.getMessage());
         }
-        birthDatePicker.setMaxWidth(Double.MAX_VALUE);
-        birthDatePicker.getStyleClass().add("form-field");
-
-        lastNameField.setPromptText("Enter last name");
-        firstNameField.setPromptText("Enter first name");
-        nicknameField.setPromptText("Enter nickname");
-        phoneField.setPromptText("e.g. 555-0101");
-        addressField.setPromptText("e.g. 123 Main St");
-        emailField.setPromptText("e.g. john@email.com");
-
-        Label personalSection = new Label("PERSONAL INFORMATION");
-        personalSection.getStyleClass().add("section-title");
-        grid.add(personalSection, 0, 0, 2, 1);
-
-        grid.add(requiredLabel("Last Name"),  0, 1);
-        grid.add(lastNameField,               1, 1);
-        grid.add(requiredLabel("First Name"), 0, 2);
-        grid.add(firstNameField,              1, 2);
-        grid.add(requiredLabel("Nickname"),   0, 3);
-        grid.add(nicknameField,               1, 3);
-        grid.add(optionalLabel("Birth Date"), 0, 4);
-        grid.add(birthDatePicker,             1, 4);
-
-        Label contactSection = new Label("CONTACT DETAILS");
-        contactSection.getStyleClass().add("section-title");
-        grid.add(contactSection, 0, 5, 2, 1);
-
-        grid.add(optionalLabel("Phone"),      0, 6);
-        grid.add(phoneField,                  1, 6);
-        grid.add(optionalLabel("Email"),      0, 7);
-        grid.add(emailField,                  1, 7);
-        grid.add(optionalLabel("Address"),    0, 8);
-        grid.add(addressField,                1, 8);
-
-        return grid;
     }
 
-    private Label requiredLabel(String text) {
-        return new Label(text + " *") {{
-            getStyleClass().add("form-label");
-        }};
-    }
-
-    private Label optionalLabel(String text) {
-        Label label = new Label(text);
-        label.getStyleClass().add("form-label");
-        return label;
-    }
-
-    // --- Form actions ---
-
-    private void handleAdd(Stage formStage) {
+    private void handleAdd() {
         String validationError = validateForm();
         if (validationError != null) {
             showAlert(Alert.AlertType.WARNING, "Validation Error", validationError);
@@ -260,7 +166,7 @@ public class PersonFormController {
         }
     }
 
-    private void handleUpdate(Stage formStage) {
+    private void handleUpdate() {
         String validationError = validateForm();
         if (validationError != null) {
             showAlert(Alert.AlertType.WARNING, "Validation Error", validationError);
@@ -287,8 +193,6 @@ public class PersonFormController {
         }
     }
 
-    // --- Validation ---
-
     private String validateForm() {
         if (isBlank(lastNameField.getText())) {
             lastNameField.requestFocus();
@@ -303,41 +207,31 @@ public class PersonFormController {
             return "Nickname is required.";
         }
 
-        if (lastNameField.getText().trim().length() > 45) {
+        if (lastNameField.getText().trim().length() > 45)
             return "Last name must be 45 characters or less.";
-        }
-        if (firstNameField.getText().trim().length() > 45) {
+        if (firstNameField.getText().trim().length() > 45)
             return "First name must be 45 characters or less.";
-        }
-        if (nicknameField.getText().trim().length() > 45) {
+        if (nicknameField.getText().trim().length() > 45)
             return "Nickname must be 45 characters or less.";
-        }
-        if (!isBlank(phoneField.getText()) && phoneField.getText().trim().length() > 15) {
+        if (!isBlank(phoneField.getText()) && phoneField.getText().trim().length() > 15)
             return "Phone number must be 15 characters or less.";
-        }
-        if (!isBlank(addressField.getText()) && addressField.getText().trim().length() > 200) {
+        if (!isBlank(addressField.getText()) && addressField.getText().trim().length() > 200)
             return "Address must be 200 characters or less.";
-        }
 
         String email = emailField.getText();
         if (!isBlank(email)) {
-            if (email.trim().length() > 150) {
+            if (email.trim().length() > 150)
                 return "Email must be 150 characters or less.";
-            }
-            if (!email.trim().matches("^[\\w.%+-]+@[\\w.-]+\\.[a-zA-Z]{2,}$")) {
+            if (!email.trim().matches("^[\\w.%+-]+@[\\w.-]+\\.[a-zA-Z]{2,}$"))
                 return "Email format is invalid (e.g. user@example.com).";
-            }
         }
 
         if (birthDatePicker.getValue() != null
-                && birthDatePicker.getValue().isAfter(LocalDate.now())) {
+                && birthDatePicker.getValue().isAfter(LocalDate.now()))
             return "Birth date cannot be in the future.";
-        }
 
         return null;
     }
-
-    // --- Helpers ---
 
     private Person buildPersonFromFields() {
         Person p = new Person();

@@ -1,5 +1,7 @@
 package com.contact;
 
+import java.sql.SQLException;
+
 import com.contact.dao.PersonDAOImpl;
 import com.contact.model.Person;
 import com.contact.ui.PersonFormController;
@@ -12,13 +14,17 @@ import javafx.collections.transformation.FilteredList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
-import javafx.scene.layout.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
-import java.sql.SQLException;
-
-// Test app for Person 4 forms — Person 3 will replace with the real main UI
 public class App extends Application {
 
     private ObservableList<Person> personList = FXCollections.observableArrayList();
