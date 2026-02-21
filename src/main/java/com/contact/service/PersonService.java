@@ -1,5 +1,6 @@
 package com.contact.service;
 
+<<<<<<< HEAD
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
@@ -19,4 +20,16 @@ public interface PersonService {
     boolean delete(Integer id) throws SQLException;
 
     List<Person> searchByName(String searchTerm) throws SQLException;
+=======
+import com.contact.model.Person;
+import java.sql.SQLException;
+import java.util.List;
+
+/**
+ * Service interface for person data retrieval.
+ * Person 2 provides the implementation; Person 3 connects the UI to this layer.
+ */
+public interface PersonService {
+    List<Person> findAll() throws SQLException;
+>>>>>>> origin/main
 }

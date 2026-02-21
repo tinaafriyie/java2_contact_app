@@ -1,4 +1,0 @@
-com\contact\dao\PersonDAO.class
-com\contact\dao\PersonDAOImpl.class
-com\contact\model\Person.class
-com\contact\util\DatabaseConnection.class
