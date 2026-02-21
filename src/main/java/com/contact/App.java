@@ -2,8 +2,9 @@ package com.contact;
 
 import java.sql.SQLException;
 
-import com.contact.dao.PersonDAOImpl;
 import com.contact.model.Person;
+import com.contact.service.PersonService;
+import com.contact.service.PersonServiceImpl;
 import com.contact.ui.PersonFormController;
 
 import javafx.application.Application;
@@ -16,6 +17,10 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
@@ -32,10 +37,12 @@ public class App extends Application {
     private TableView<Person> table = new TableView<>();
     private PersonFormController formController;
     private Label statsLabel;
+    private PersonService personService;
 
     @Override
     public void start(Stage primaryStage) {
         primaryStage.setTitle("Contact Manager");
+        personService = new PersonServiceImpl();
 
         loadPersons();
         filteredList = new FilteredList<>(personList, p -> true);
@@ -50,6 +57,22 @@ public class App extends Application {
 
         HBox header = new HBox(headerText);
         header.getStyleClass().add("header");
+
+        // Menu bar - application navigation
+        MenuBar menuBar = new MenuBar();
+        Menu fileMenu = new Menu("File");
+        MenuItem refreshItem = new MenuItem("Refresh");
+        refreshItem.setOnAction(e -> loadPersons());
+        MenuItem exitItem = new MenuItem("Exit");
+        exitItem.setOnAction(e -> primaryStage.close());
+        fileMenu.getItems().addAll(refreshItem, new SeparatorMenuItem(), exitItem);
+
+        Menu helpMenu = new Menu("Help");
+        MenuItem aboutItem = new MenuItem("About");
+        aboutItem.setOnAction(e -> showAbout());
+        helpMenu.getItems().add(aboutItem);
+
+        menuBar.getMenus().addAll(fileMenu, helpMenu);
 
         // Toolbar
         TextField searchField = new TextField();
@@ -85,7 +108,11 @@ public class App extends Application {
         deleteBtn.setOnAction(e ->
                 formController.showDeleteConfirmation(table.getSelectionModel().getSelectedItem()));
 
-        HBox toolbar = new HBox(12, searchField, spacer, addBtn, editBtn, deleteBtn);
+        Button refreshBtn = new Button("\u21BB Refresh");
+        refreshBtn.getStyleClass().add("btn-refresh");
+        refreshBtn.setOnAction(e -> loadPersons());
+
+        HBox toolbar = new HBox(12, searchField, spacer, refreshBtn, addBtn, editBtn, deleteBtn);
         toolbar.setAlignment(Pos.CENTER_LEFT);
         toolbar.setPadding(new Insets(16, 24, 12, 24));
 
@@ -121,6 +148,10 @@ public class App extends Application {
         table.getColumns().addAll(idCol, nameCol, nickCol, phoneCol, emailCol);
         table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
+        // Handle table selection events: enable/disable Edit and Delete when selection changes
+        editBtn.disableProperty().bind(table.getSelectionModel().selectedItemProperty().isNull());
+        deleteBtn.disableProperty().bind(table.getSelectionModel().selectedItemProperty().isNull());
+
         VBox tableCard = new VBox(table);
         tableCard.getStyleClass().add("card");
         VBox.setVgrow(table, Priority.ALWAYS);
@@ -136,7 +167,7 @@ public class App extends Application {
         content.setPadding(new Insets(0, 20, 10, 20));
         VBox.setVgrow(tableCard, Priority.ALWAYS);
 
-        VBox root = new VBox(header, content);
+        VBox root = new VBox(menuBar, header, content);
         VBox.setVgrow(content, Priority.ALWAYS);
 
         Scene scene = new Scene(root, 720, 680);
@@ -161,10 +192,20 @@ public class App extends Application {
 
     private void loadPersons() {
         try {
-            personList.setAll(new PersonDAOImpl().findAll());
+            personList.setAll(personService.findAll());
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    private void showAbout() {
+        javafx.scene.control.Alert alert = new javafx.scene.control.Alert(
+                javafx.scene.control.Alert.AlertType.INFORMATION);
+        alert.setTitle("About");
+        alert.setHeaderText("Contact Manager");
+        alert.setContentText("A JavaFX Contact Management Application.\n"
+                + "Manage your contacts with ease.");
+        alert.showAndWait();
     }
 
     public static void main(String[] args) {

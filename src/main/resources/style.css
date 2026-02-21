@@ -26,6 +26,57 @@
     -fx-text-fill: rgba(255,255,255,0.8);
 }
 
+/* Main menu bar */
+
+.menu-bar {
+    -fx-background-color: linear-gradient(to right, #4a90d9, #5f7fe7);
+    -fx-padding: 3 10;
+    -fx-border-color: transparent transparent rgba(255,255,255,0.25) transparent;
+    -fx-border-width: 0 0 1 0;
+}
+
+.menu-bar > .container > .menu-button {
+    -fx-background-radius: 6;
+    -fx-padding: 2 8;
+}
+
+.menu-bar > .container > .menu-button > .label {
+    -fx-text-fill: white;
+    -fx-font-size: 12px;
+}
+
+.menu-bar > .container > .menu-button:hover,
+.menu-bar > .container > .menu-button:showing {
+    -fx-background-color: rgba(255,255,255,0.2);
+}
+
+.context-menu {
+    -fx-background-color: white;
+    -fx-background-radius: 8;
+    -fx-border-color: #dbe3ef;
+    -fx-border-radius: 8;
+    -fx-padding: 4;
+}
+
+/* Ensure dropdown menu item text is always visible - dark on white */
+.context-menu .label,
+.context-menu .menu-item .label,
+.menu-item .label {
+    -fx-text-fill: #2c3e50;
+    -fx-font-size: 12px;
+}
+
+.context-menu .menu-item:focused,
+.context-menu .menu:focused {
+    -fx-background-color: #eaf1ff;
+    -fx-background-radius: 6;
+}
+
+.context-menu .menu-item:focused .label,
+.context-menu .menu:focused .label {
+    -fx-text-fill: #1a3a5c;
+}
+
 .card {
     -fx-background-color: white;
     -fx-background-radius: 10;
@@ -128,6 +179,16 @@
 .btn-add:hover {
     -fx-background-color: #43a047;
     -fx-effect: dropshadow(gaussian, rgba(76,175,80,0.45), 8, 0, 0, 3);
+}
+
+.btn-refresh {
+    -fx-background-color: #6c757d;
+    -fx-text-fill: white;
+    -fx-effect: dropshadow(gaussian, rgba(108,117,125,0.3), 6, 0, 0, 2);
+}
+.btn-refresh:hover {
+    -fx-background-color: #5a6268;
+    -fx-effect: dropshadow(gaussian, rgba(108,117,125,0.45), 8, 0, 0, 3);
 }
 
 .btn-edit {
