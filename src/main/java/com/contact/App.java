@@ -39,7 +39,8 @@ public class App extends Application {
     private Label statsLabel;
     private PersonService personService;
 
-    @Override
+    @SuppressWarnings({ "unchecked", "deprecation" })
+	@Override
     public void start(Stage primaryStage) {
         primaryStage.setTitle("Contact Manager");
         personService = new PersonServiceImpl();

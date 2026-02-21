@@ -1,7 +1,6 @@
 package com.contact.model;
 
 import java.time.LocalDate;
-import java.util.Objects;
 
 public class Person {
     private Integer idperson;
