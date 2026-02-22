@@ -2,6 +2,7 @@ package com.contact;
 
 import java.sql.SQLException;
 
+import com.contact.dao.PersonDAOImpl;
 import com.contact.model.Person;
 import com.contact.service.PersonService;
 import com.contact.service.PersonServiceImpl;
@@ -42,7 +43,7 @@ public class App extends Application {
     @Override
     public void start(Stage primaryStage) {
         primaryStage.setTitle("Contact Manager");
-        personService = new PersonServiceImpl();
+        personService = new PersonServiceImpl(new PersonDAOImpl());
 
         loadPersons();
         filteredList = new FilteredList<>(personList, p -> true);
