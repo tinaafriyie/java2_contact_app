@@ -12,10 +12,10 @@ public class DatabaseConnection {
         try {
             Class.forName("org.sqlite.JDBC");
             this.connection = DriverManager.getConnection(DB_URL);
-            System.out.println("✅ Database connected!");
+            System.out.println("Database connected!");
             initializeDatabase();
         } catch (Exception e) {
-            System.err.println("❌ Database connection failed!");
+            System.err.println("Database connection failed!");
             e.printStackTrace();
         }
     }
@@ -59,7 +59,7 @@ public class DatabaseConnection {
                         stmt.execute(statement.trim());
                     }
                 }
-                System.out.println("✅ Database initialized!");
+                System.out.println("Database initialized!");
             }
         } catch (Exception e) {
             e.printStackTrace();

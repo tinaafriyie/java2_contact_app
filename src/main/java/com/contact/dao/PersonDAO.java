@@ -6,10 +6,10 @@ import java.util.List;
 import java.util.Optional;
 
 public interface PersonDAO {
-    Person create(Person person) throws SQLException;
+    Person createPerson(Person person) throws SQLException;
     Optional<Person> findById(Integer id) throws SQLException;
     List<Person> findAll() throws SQLException;
-    boolean update(Person person) throws SQLException;
-    boolean delete(Integer id) throws SQLException;
-    List<Person> searchByName(String searchTerm) throws SQLException;
+    boolean updatePerson(Person person) throws SQLException;
+    boolean deletePerson(Integer id) throws SQLException;
+    List<Person> searchPersonByName(String searchTerm) throws SQLException;
 }

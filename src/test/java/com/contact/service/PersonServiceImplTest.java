@@ -129,7 +129,7 @@ class PersonServiceImplTest {
          * @return a copy of the created person with an assigned id
          */
         @Override
-        public Person create(Person person) {
+        public Person createPerson(Person person) {
             int id = idGen.getAndIncrement();
             Person copy = copyOf(person);
             copy.setIdperson(id);
@@ -170,7 +170,7 @@ class PersonServiceImplTest {
          * @returns True if update was successful or false if not
          */
         @Override
-        public boolean update(Person person) {
+        public boolean updatePerson(Person person) {
             if (person == null || person.getIdperson() == null) return false;
             if (!store.containsKey(person.getIdperson())) return false;
             store.put(person.getIdperson(), copyOf(person));
@@ -184,7 +184,7 @@ class PersonServiceImplTest {
          * @return true if the delete was successful or false if not
          */
         @Override
-        public boolean delete(Integer id) {
+        public boolean deletePerson(Integer id) {
             if (id == null) return false;
             return store.remove(id) != null;
         }
@@ -197,7 +197,7 @@ class PersonServiceImplTest {
          * @return a list of matching persons as defensive copies
          */
         @Override
-        public List<Person> searchByName(String searchTerm) {
+        public List<Person> searchPersonByName(String searchTerm) {
             String q = (searchTerm == null) ? "" : searchTerm.trim().toLowerCase();
             if (q.isEmpty()) return findAll();
 

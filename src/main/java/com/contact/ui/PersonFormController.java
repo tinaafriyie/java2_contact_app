@@ -86,7 +86,7 @@ public class PersonFormController {
         confirm.showAndWait().ifPresent(response -> {
             if (response == ButtonType.OK) {
                 try {
-                    boolean deleted = personDAO.delete(person.getIdperson());
+                    boolean deleted = personDAO.deletePerson(person.getIdperson());
                     if (deleted) {
                         showAlert(Alert.AlertType.INFORMATION, "Deleted",
                                 person.getFullName() + " has been deleted.");
@@ -154,7 +154,7 @@ public class PersonFormController {
 
         Person person = buildPersonFromFields();
         try {
-            personDAO.create(person);
+            personDAO.createPerson(person);
             showAlert(Alert.AlertType.INFORMATION, "Success",
                     person.getFullName() + " has been added.");
             clearForm();
@@ -176,7 +176,7 @@ public class PersonFormController {
         Person person = buildPersonFromFields();
         person.setIdperson(editingPersonId);
         try {
-            boolean updated = personDAO.update(person);
+            boolean updated = personDAO.updatePerson(person);
             if (updated) {
                 showAlert(Alert.AlertType.INFORMATION, "Success",
                         person.getFullName() + " has been updated.");
