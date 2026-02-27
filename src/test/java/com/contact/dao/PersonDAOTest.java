@@ -29,7 +29,7 @@ class PersonDAOTest {
         testPerson.setEmailAddress("test@example.com");
         testPerson.setBirthDate(LocalDate.of(1995, 5, 15));
         
-        Person created = personDAO.create(testPerson);
+        Person created = personDAO.createPerson(testPerson);
         
         assertThat(created.getIdperson()).isNotNull();
         assertThat(created.getLastname()).isEqualTo("TestLast");
@@ -62,7 +62,7 @@ class PersonDAOTest {
     @DisplayName("Should update person")
     void testUpdate() throws SQLException {
         testPerson.setPhoneNumber("555-9999");
-        boolean updated = personDAO.update(testPerson);
+        boolean updated = personDAO.updatePerson(testPerson);
         
         assertThat(updated).isTrue();
         
@@ -76,7 +76,7 @@ class PersonDAOTest {
     @Order(5)
     @DisplayName("Should search persons by name")
     void testSearch() throws SQLException {
-        List<Person> results = personDAO.searchByName("Test");
+        List<Person> results = personDAO.searchPersonByName("Test");
         
         assertThat(results).isNotEmpty();
         assertThat(results)
@@ -89,7 +89,7 @@ class PersonDAOTest {
     @Order(6)
     @DisplayName("Should delete person")
     void testDelete() throws SQLException {
-        boolean deleted = personDAO.delete(testPerson.getIdperson());
+        boolean deleted = personDAO.deletePerson(testPerson.getIdperson());
         
         assertThat(deleted).isTrue();
         

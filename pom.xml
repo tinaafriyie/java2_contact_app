@@ -102,23 +102,28 @@
                 </configuration>
             </plugin>
             
-            <plugin>
-                <groupId>org.openjfx</groupId>
-                <artifactId>javafx-maven-plugin</artifactId>
-                <version>0.0.8</version>
-                <executions>
-                    <execution>
-                        <id>default-cli</id>
-                        <configuration>
-                            <mainClass>${appModule}/${appMainClass}</mainClass>
-                            <options>
-                                <option>--enable-native-access=javafx.graphics</option>
-                                <option>--enable-native-access=ALL-UNNAMED</option>
-                            </options>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
+			<plugin>
+			    <groupId>org.openjfx</groupId>
+			    <artifactId>javafx-maven-plugin</artifactId>
+			    <version>0.0.8</version>
+			    <executions>
+			        <execution>
+			            <id>default-cli</id>
+			            <configuration>
+			                <mainClass>${appModule}/${appMainClass}</mainClass>
+			                <options>
+			                    <option>--enable-native-access=javafx.graphics</option>
+			                    <option>--enable-native-access=org.xerial.sqlitejdbc</option>
+			                    <option>--enable-native-access=ALL-UNNAMED</option>
+			                    <option>--add-opens</option>
+			                    <option>javafx.graphics/com.sun.glass.utils=ALL-UNNAMED</option>
+			                    <option>--add-opens</option>
+			                    <option>javafx.graphics/com.sun.javafx.tk=ALL-UNNAMED</option>
+			                </options>
+			            </configuration>
+			        </execution>
+			    </executions>
+			</plugin>
         </plugins>
     </build>
 </project>

@@ -16,11 +16,11 @@ public class PersonDAOImpl implements PersonDAO {
     }
 
     @Override
-    public Person create(Person person) throws SQLException {
+    public Person createPerson(Person person) throws SQLException {
         String sql = "INSERT INTO person (lastname, firstname, nickname, phone_number, address, email_address, birth_date) VALUES (?, ?, ?, ?, ?, ?, ?)";
         
-        try (Connection conn = dbConnection.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        try (Connection connection = dbConnection.getConnection();
+             PreparedStatement pstmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             
             pstmt.setString(1, person.getLastname());
             pstmt.setString(2, person.getFirstname());
@@ -37,7 +37,7 @@ public class PersonDAOImpl implements PersonDAO {
                     person.setIdperson(generatedKeys.getInt(1));
                 }
             }
-            System.out.println("✅ Person created: " + person.getFullName());
+            System.out.println("Person created: " + person.getFullName());
             return person;
         }
     }
@@ -71,13 +71,13 @@ public class PersonDAOImpl implements PersonDAO {
             while (rs.next()) {
                 persons.add(mapResultSetToPerson(rs));
             }
-            System.out.println("✅ Retrieved " + persons.size() + " persons");
+            System.out.println("Retrieved " + persons.size() + " persons");
         }
         return persons;
     }
 
     @Override
-    public boolean update(Person person) throws SQLException {
+    public boolean updatePerson(Person person) throws SQLException {
         String sql = "UPDATE person SET lastname=?, firstname=?, nickname=?, phone_number=?, address=?, email_address=?, birth_date=? WHERE idperson=?";
         
         try (Connection conn = dbConnection.getConnection();
@@ -93,13 +93,13 @@ public class PersonDAOImpl implements PersonDAO {
             pstmt.setInt(8, person.getIdperson());
             
             int rows = pstmt.executeUpdate();
-            System.out.println(rows > 0 ? "✅ Person updated" : "⚠️ Person not found");
+            System.out.println(rows > 0 ? "Person updated" : "Person not found");
             return rows > 0;
         }
     }
 
     @Override
-    public boolean delete(Integer id) throws SQLException {
+    public boolean deletePerson(Integer id) throws SQLException {
         String sql = "DELETE FROM person WHERE idperson = ?";
         
         try (Connection conn = dbConnection.getConnection();
@@ -107,13 +107,13 @@ public class PersonDAOImpl implements PersonDAO {
             
             pstmt.setInt(1, id);
             int rows = pstmt.executeUpdate();
-            System.out.println(rows > 0 ? "✅ Person deleted" : "⚠️ Person not found");
+            System.out.println(rows > 0 ? "Person deleted" : "Person not found");
             return rows > 0;
         }
     }
 
     @Override
-    public List<Person> searchByName(String searchTerm) throws SQLException {
+    public List<Person> searchPersonByName(String searchTerm) throws SQLException {
         List<Person> persons = new ArrayList<>();
         String sql = "SELECT * FROM person WHERE LOWER(firstname) LIKE LOWER(?) OR LOWER(lastname) LIKE LOWER(?)";
         
@@ -129,7 +129,7 @@ public class PersonDAOImpl implements PersonDAO {
                     persons.add(mapResultSetToPerson(rs));
                 }
             }
-            System.out.println("✅ Found " + persons.size() + " matching persons");
+            System.out.println(" Found " + persons.size() + " matching persons");
         }
         return persons;
     }
@@ -144,16 +144,25 @@ public class PersonDAOImpl implements PersonDAO {
         person.setAddress(rs.getString("address"));
         person.setEmailAddress(rs.getString("email_address"));
         
-        // Safer date handling for SQLite
-        String birthDateStr = rs.getString("birth_date");
-        if (birthDateStr != null && !birthDateStr.isEmpty()) {
-            try {
-                person.setBirthDate(LocalDate.parse(birthDateStr));
-            } catch (Exception e) {
-                // If parsing fails, leave birth_date as null
-                System.err.println("Could not parse date: " + birthDateStr);
+        
+        try {
+            Date birthDate = rs.getDate("birth_date");
+            if (birthDate != null) {
+                person.setBirthDate(birthDate.toLocalDate());
+            }
+        } catch (Exception e) {
+            
+            String dateStr = rs.getString("birth_date");
+            if (dateStr != null && !dateStr.isEmpty()) {
+                try {
+                    
+                    person.setBirthDate(LocalDate.parse(dateStr));
+                } catch (Exception e2) {
+                    
+                }
             }
         }
+        
         return person;
     }
 }

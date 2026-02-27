@@ -111,7 +111,7 @@ class PersonServiceImplTest {
         private final Map<Integer, Person> store = new LinkedHashMap<>();
 
         @Override
-        public Person create(Person person) {
+        public Person createPerson(Person person) {
             int id = idGen.getAndIncrement();
             Person copy = copyOf(person);
             copy.setIdperson(id);
@@ -132,7 +132,7 @@ class PersonServiceImplTest {
         }
 
         @Override
-        public boolean update(Person person) {
+        public boolean updatePerson(Person person) {
             if (person == null || person.getIdperson() == null) return false;
             if (!store.containsKey(person.getIdperson())) return false;
             store.put(person.getIdperson(), copyOf(person));
@@ -140,13 +140,13 @@ class PersonServiceImplTest {
         }
 
         @Override
-        public boolean delete(Integer id) {
+        public boolean deletePerson(Integer id) {
             if (id == null) return false;
             return store.remove(id) != null;
         }
 
         @Override
-        public List<Person> searchByName(String searchTerm) {
+        public List<Person> searchPersonByName(String searchTerm) {
             String q = (searchTerm == null) ? "" : searchTerm.trim().toLowerCase();
             if (q.isEmpty()) return findAll();
 

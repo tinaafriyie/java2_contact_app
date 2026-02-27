@@ -32,7 +32,7 @@ public class PersonServiceImpl implements PersonService {
             throw new IllegalStateException("Duplicate person (same firstname + lastname)");
         }
 
-        return personDAO.create(person);
+        return personDAO.createPerson(person);
     }
 
     @Override
@@ -60,13 +60,13 @@ public class PersonServiceImpl implements PersonService {
             throw new IllegalStateException("Duplicate person (same firstname + lastname)");
         }
 
-        return personDAO.update(person);
+        return personDAO.updatePerson(person);
     }
 
     @Override
     public boolean delete(Integer id) throws SQLException {
         if (id == null || id <= 0) throw new IllegalArgumentException("Invalid id");
-        return personDAO.delete(id);
+        return personDAO.deletePerson(id);
     }
 
     @Override
@@ -77,7 +77,7 @@ public class PersonServiceImpl implements PersonService {
             return findAll();
         }
 
-        return personDAO.searchByName(q);
+        return personDAO.searchPersonByName(q);
     }
 
 
