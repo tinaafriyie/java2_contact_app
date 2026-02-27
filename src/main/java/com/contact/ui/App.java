@@ -1,4 +1,4 @@
-package com.contact;
+package com.contact.ui;
 
 import java.sql.SQLException;
 
@@ -6,7 +6,6 @@ import com.contact.dao.PersonDAOImpl;
 import com.contact.model.Person;
 import com.contact.service.PersonService;
 import com.contact.service.PersonServiceImpl;
-import com.contact.ui.PersonFormController;
 
 import javafx.application.Application;
 import javafx.beans.property.SimpleStringProperty;
