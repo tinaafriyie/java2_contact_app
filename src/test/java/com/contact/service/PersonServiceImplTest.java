@@ -23,6 +23,7 @@ class PersonServiceImplTest {
         service = new PersonServiceImpl(fakeDao);
     }
 
+
     @Test
     void create_shouldThrow_whenFirstnameMissing() {
         Person p = new Person();
@@ -32,6 +33,7 @@ class PersonServiceImplTest {
         assertThrows(IllegalArgumentException.class, () -> service.create(p));
     }
 
+  
     @Test
     void create_shouldThrow_whenEmailInvalid() {
         Person p = basePerson("Doe", "John", "JD");
@@ -40,6 +42,7 @@ class PersonServiceImplTest {
         assertThrows(IllegalArgumentException.class, () -> service.create(p));
     }
 
+    
     @Test
     void create_shouldThrow_whenPhoneInvalid() {
         Person p = basePerson("Doe", "John", "JD");
@@ -91,7 +94,16 @@ class PersonServiceImplTest {
         assertEquals("Doe", result.get(0).getLastname());
     }
 
-    
+    /**
+     * Creates a valid Person instance for testing purposes,
+     *with customization of lastname, firstname, and nickname.
+     * Other fields are completed  with default valid values.
+     *
+     * @param last the lastname to set
+     * @param first the firstname to set
+     * @param nick the nickname to set
+     * @return a fully initialized Person instance
+     */
     private static Person basePerson(String last, String first, String nick) {
         Person p = new Person();
         p.setLastname(last);
@@ -110,6 +122,12 @@ class PersonServiceImplTest {
         private final AtomicInteger idGen = new AtomicInteger(1);
         private final Map<Integer, Person> store = new LinkedHashMap<>();
 
+        /**
+         * Creates a new person, simulates storing it in memory, and returns a copy of the entity.
+         *
+         * @param person the person to create
+         * @return a copy of the created person with an assigned id
+         */
         @Override
         public Person create(Person person) {
             int id = idGen.getAndIncrement();
@@ -119,18 +137,38 @@ class PersonServiceImplTest {
             return copyOf(copy);
         }
 
+        /**
+         * Returns person sing the identifier, if there is not a person with that id returns empty optional
+         *
+         * @param id the identifier of the person to retrieve
+         * @return an Optional containing a copy of the found person,
+         *         or empty if no person exists with the given id
+         */
+        
         @Override
         public Optional<Person> findById(Integer id) {
             if (id == null) return Optional.empty();
             Person p = store.get(id);
             return Optional.ofNullable(p == null ? null : copyOf(p));
         }
-
+        
+        /**
+         * Gets all person from stored in-mempry
+         * 
+         * @returns a list of copies of all stored persons
+         */
         @Override
         public List<Person> findAll() {
             return store.values().stream().map(FakePersonDAO::copyOf).toList();
         }
 
+        
+        /**
+         * Updates a person in memory store, returns false if person or id are null, or if no person with given id exists
+         * 
+         * @param person to update 
+         * @returns True if update was successful or false if not
+         */
         @Override
         public boolean update(Person person) {
             if (person == null || person.getIdperson() == null) return false;
@@ -139,12 +177,25 @@ class PersonServiceImplTest {
             return true;
         }
 
+        /**
+         * Deletes a person form the in-memory store using the id
+         * 
+         * @Param id of the person to delete
+         * @return true if the delete was successful or false if not
+         */
         @Override
         public boolean delete(Integer id) {
             if (id == null) return false;
             return store.remove(id) != null;
         }
 
+        
+        /**
+         * Searches for a person in the in memory store, if the name, lastname of nickname contains the search term
+         * 
+         * @param searchTerm the string that we are searching for
+         * @return a list of matching persons as defensive copies
+         */
         @Override
         public List<Person> searchByName(String searchTerm) {
             String q = (searchTerm == null) ? "" : searchTerm.trim().toLowerCase();
@@ -158,10 +209,26 @@ class PersonServiceImplTest {
                     .toList();
         }
 
+        /**
+         * Checks whether the string contains the specified 
+         * lowercase search term in a case-insensitive manner.
+         * @param s the source string to search in 
+         * @param qLower the lowercase search term
+         * @return true if the source string is not null and contains the search term,
+         * false otherwise
+         */
         private static boolean contains(String s, String qLower) {
             return s != null && s.toLowerCase().contains(qLower);
         }
 
+        
+        /**
+         * Creates a defensive copy of the given Person instance, this prevents external code from modifying the internal
+         * state of the in-memory store.
+         *
+         * @param p the person to copy
+         * @return a new Person instance with the same field values
+         */
         private static Person copyOf(Person p) {
             Person c = new Person();
             c.setIdperson(p.getIdperson());
