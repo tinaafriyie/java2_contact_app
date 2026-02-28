@@ -161,8 +161,12 @@ public class PersonFormController {
             refreshPersonList();
             formStage.close();
         } catch (SQLException e) {
-            showAlert(Alert.AlertType.ERROR, "Database Error",
-                    "Could not add person: " + e.getMessage());
+            if (isDuplicateContactError(e)) {
+                showAlert(Alert.AlertType.WARNING, "Validation Error", e.getMessage());
+            } else {
+                showAlert(Alert.AlertType.ERROR, "Database Error",
+                        "Could not add person: " + e.getMessage());
+            }
         }
     }
 
@@ -188,8 +192,12 @@ public class PersonFormController {
                         "Could not update. Person may have been deleted.");
             }
         } catch (SQLException e) {
-            showAlert(Alert.AlertType.ERROR, "Database Error",
-                    "Could not update person: " + e.getMessage());
+            if (isDuplicateContactError(e)) {
+                showAlert(Alert.AlertType.WARNING, "Validation Error", e.getMessage());
+            } else {
+                showAlert(Alert.AlertType.ERROR, "Database Error",
+                        "Could not update person: " + e.getMessage());
+            }
         }
     }
 
@@ -286,5 +294,14 @@ public class PersonFormController {
 
     private boolean isBlank(String s) {
         return s == null || s.trim().isEmpty();
+    }
+
+    private boolean isDuplicateContactError(SQLException e) {
+        if (e == null || e.getMessage() == null) {
+            return false;
+        }
+        String message = e.getMessage().toLowerCase();
+        return message.contains("email address already exists")
+                || message.contains("phone number already exists");
     }
 }

@@ -8,6 +8,7 @@ import com.contact.service.PersonService;
 import com.contact.service.PersonServiceImpl;
 
 import javafx.application.Application;
+import javafx.collections.ListChangeListener;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -15,6 +16,7 @@ import javafx.collections.transformation.FilteredList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
@@ -33,9 +35,9 @@ import javafx.stage.Stage;
 
 public class App extends Application {
 
-    private ObservableList<Person> personList = FXCollections.observableArrayList();
+    private final ObservableList<Person> personList = FXCollections.observableArrayList();
     private FilteredList<Person> filteredList;
-    private TableView<Person> table = new TableView<>();
+    private final TableView<Person> table = new TableView<>();
     private PersonFormController formController;
     private Label statsLabel;
     private PersonService personService;
@@ -44,7 +46,7 @@ public class App extends Application {
     private VBox homeView;
     private VBox managerView;
 
-    @SuppressWarnings({ "unchecked", "deprecation" })
+    @SuppressWarnings("deprecation")
 	@Override
     public void start(Stage primaryStage) {
         this.primaryStage = primaryStage;
@@ -165,7 +167,7 @@ public class App extends Application {
                 c.getValue().getEmailAddress() != null ? c.getValue().getEmailAddress() : "—"));
         emailCol.setPrefWidth(190);
 
-        table.getColumns().addAll(idCol, nameCol, nickCol, phoneCol, emailCol);
+        table.getColumns().setAll(idCol, nameCol, nickCol, phoneCol, emailCol);
         table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
         // Handle table selection events: enable/disable Edit and Delete when selection changes
@@ -202,7 +204,8 @@ public class App extends Application {
         primaryStage.setMinHeight(500);
         primaryStage.show();
 
-        personList.addListener((javafx.collections.ListChangeListener<Person>) c -> updateStats());
+        ListChangeListener<Person> listChangeListener = change -> updateStats();
+        personList.addListener(listChangeListener);
     }
 
     private VBox buildHomeView() {
@@ -244,17 +247,27 @@ public class App extends Application {
         try {
             personList.setAll(personService.findAll());
         } catch (SQLException e) {
-            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Database Error",
+                    "Could not load contacts: " + e.getMessage());
         }
     }
 
     private void showAbout() {
-        javafx.scene.control.Alert alert = new javafx.scene.control.Alert(
-                javafx.scene.control.Alert.AlertType.INFORMATION);
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("About");
         alert.setHeaderText("Contact Manager");
-        alert.setContentText("A JavaFX Contact Management Application.\n"
-                + "Manage your contacts with ease.");
+        alert.setContentText("""
+                A JavaFX Contact Management Application.
+                Manage your contacts with ease.
+                """);
+        alert.showAndWait();
+    }
+
+    private void showAlert(Alert.AlertType type, String title, String message) {
+        Alert alert = new Alert(type);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
         alert.showAndWait();
     }
 

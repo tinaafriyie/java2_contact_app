@@ -21,13 +21,17 @@ public class PersonDAOImpl implements PersonDAO {
         
         try (Connection connection = dbConnection.getConnection();
              PreparedStatement pstmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+
+            String phone = normalizeContactValue(person.getPhoneNumber());
+            String email = normalizeContactValue(person.getEmailAddress());
+            validateUniqueContactDetails(connection, phone, email, null);
             
             pstmt.setString(1, person.getLastname());
             pstmt.setString(2, person.getFirstname());
             pstmt.setString(3, person.getNickname());
-            pstmt.setString(4, person.getPhoneNumber());
+            pstmt.setString(4, phone);
             pstmt.setString(5, person.getAddress());
-            pstmt.setString(6, person.getEmailAddress());
+            pstmt.setString(6, email);
             pstmt.setDate(7, person.getBirthDate() != null ? Date.valueOf(person.getBirthDate()) : null);
             
             pstmt.executeUpdate();
@@ -82,13 +86,17 @@ public class PersonDAOImpl implements PersonDAO {
         
         try (Connection conn = dbConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            String phone = normalizeContactValue(person.getPhoneNumber());
+            String email = normalizeContactValue(person.getEmailAddress());
+            validateUniqueContactDetails(conn, phone, email, person.getIdperson());
             
             pstmt.setString(1, person.getLastname());
             pstmt.setString(2, person.getFirstname());
             pstmt.setString(3, person.getNickname());
-            pstmt.setString(4, person.getPhoneNumber());
+            pstmt.setString(4, phone);
             pstmt.setString(5, person.getAddress());
-            pstmt.setString(6, person.getEmailAddress());
+            pstmt.setString(6, email);
             pstmt.setDate(7, person.getBirthDate() != null ? Date.valueOf(person.getBirthDate()) : null);
             pstmt.setInt(8, person.getIdperson());
             
@@ -132,6 +140,56 @@ public class PersonDAOImpl implements PersonDAO {
             System.out.println(" Found " + persons.size() + " matching persons");
         }
         return persons;
+    }
+
+    private void validateUniqueContactDetails(Connection connection, String phone, String email, Integer idToIgnore)
+            throws SQLException {
+        if (email != null && emailExists(connection, email, idToIgnore)) {
+            throw new SQLException("Email address already exists.");
+        }
+        if (phone != null && phoneExists(connection, phone, idToIgnore)) {
+            throw new SQLException("Phone number already exists.");
+        }
+    }
+
+    private boolean emailExists(Connection connection, String email, Integer idToIgnore) throws SQLException {
+        String sql = idToIgnore == null
+                ? "SELECT 1 FROM person WHERE email_address IS NOT NULL AND LOWER(TRIM(email_address)) = LOWER(TRIM(?)) LIMIT 1"
+                : "SELECT 1 FROM person WHERE email_address IS NOT NULL AND LOWER(TRIM(email_address)) = LOWER(TRIM(?)) AND idperson <> ? LIMIT 1";
+
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setString(1, email);
+            if (idToIgnore != null) {
+                pstmt.setInt(2, idToIgnore);
+            }
+            try (ResultSet rs = pstmt.executeQuery()) {
+                return rs.next();
+            }
+        }
+    }
+
+    private boolean phoneExists(Connection connection, String phone, Integer idToIgnore) throws SQLException {
+        String sql = idToIgnore == null
+                ? "SELECT 1 FROM person WHERE phone_number IS NOT NULL AND TRIM(phone_number) = TRIM(?) LIMIT 1"
+                : "SELECT 1 FROM person WHERE phone_number IS NOT NULL AND TRIM(phone_number) = TRIM(?) AND idperson <> ? LIMIT 1";
+
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setString(1, phone);
+            if (idToIgnore != null) {
+                pstmt.setInt(2, idToIgnore);
+            }
+            try (ResultSet rs = pstmt.executeQuery()) {
+                return rs.next();
+            }
+        }
+    }
+
+    private String normalizeContactValue(String value) {
+        if (value == null) {
+            return null;
+        }
+        String trimmed = value.trim();
+        return trimmed.isEmpty() ? null : trimmed;
     }
 
     private Person mapResultSetToPerson(ResultSet rs) throws SQLException {
