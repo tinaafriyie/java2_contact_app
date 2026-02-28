@@ -44,7 +44,7 @@ public class App extends Application {
     private VBox homeView;
     private VBox managerView;
 
-    @SuppressWarnings({ "unchecked", "deprecation" })
+   
 	@Override
     public void start(Stage primaryStage) {
         this.primaryStage = primaryStage;
