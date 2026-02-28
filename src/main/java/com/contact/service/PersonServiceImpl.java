@@ -35,12 +35,23 @@ public class PersonServiceImpl implements PersonService {
     public Person create(Person person) throws SQLException {
         validate(person);
 
-
         if (existsDuplicate(person, null)) {
-            throw new IllegalStateException("Duplicate person (same firstname + lastname)");
+            throw new IllegalStateException(
+                "Duplicate person (same firstname + lastname + phone + email)"
+            );
         }
 
-        return personDAO.createPerson(person);
+        try {
+            return personDAO.createPerson(person);
+        } catch (SQLException e) {
+            String msg = (e.getMessage() == null) ? "" : e.getMessage().toLowerCase();
+            if (msg.contains("unique") || msg.contains("constraint")) {
+                throw new IllegalStateException(
+                    "This contact already exists.", e
+                );
+            }
+            throw e;
+        }
     }
 
     /**
