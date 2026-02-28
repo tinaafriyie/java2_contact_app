@@ -28,6 +28,19 @@
 
 /* Main menu bar */
 
+.btn-home-header {
+    -fx-background-color: rgba(255,255,255,0.2);
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-padding: 6 12;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+}
+.btn-home-header:hover {
+    -fx-background-color: rgba(255,255,255,0.32);
+}
+
 .menu-bar {
     -fx-background-color: linear-gradient(to right, #4a90d9, #5f7fe7);
     -fx-padding: 3 10;
@@ -323,4 +336,52 @@
     -fx-font-weight: bold;
     -fx-text-fill: #868e96;
     -fx-padding: 8 0 4 0;
+}
+
+/* Home page */
+.home-pane {
+    -fx-background-color: #f5f5f5;
+}
+
+.home-graphic {
+    -fx-padding: 0;
+}
+
+.home-title {
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2c3e50;
+}
+
+.home-subtitle {
+    -fx-font-size: 14px;
+    -fx-text-fill: #6c757d;
+}
+
+.btn-view-contacts {
+    -fx-background-color: #007bff;
+    -fx-text-fill: white;
+    -fx-padding: 12 32;
+    -fx-min-width: 200;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(gaussian, rgba(0,123,255,0.3), 6, 0, 0, 2);
+}
+.btn-view-contacts:hover {
+    -fx-background-color: #0056b3;
+    -fx-effect: dropshadow(gaussian, rgba(0,123,255,0.45), 8, 0, 0, 3);
+}
+
+.btn-add-contact {
+    -fx-background-color: #28a745;
+    -fx-text-fill: white;
+    -fx-padding: 12 32;
+    -fx-min-width: 200;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(gaussian, rgba(40,167,69,0.3), 6, 0, 0, 2);
+}
+.btn-add-contact:hover {
+    -fx-background-color: #218838;
+    -fx-effect: dropshadow(gaussian, rgba(40,167,69,0.45), 8, 0, 0, 3);
 }

@@ -27,6 +27,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
@@ -38,35 +39,53 @@ public class App extends Application {
     private PersonFormController formController;
     private Label statsLabel;
     private PersonService personService;
+    private Stage primaryStage;
+    private StackPane rootStack;
+    private VBox homeView;
+    private VBox managerView;
 
     @SuppressWarnings({ "unchecked", "deprecation" })
 	@Override
     public void start(Stage primaryStage) {
-        primaryStage.setTitle("Contact Manager");
+        this.primaryStage = primaryStage;
+        primaryStage.setTitle("Contact App");
         personService = new PersonServiceImpl(new PersonDAOImpl());
 
         loadPersons();
         filteredList = new FilteredList<>(personList, p -> true);
         formController = new PersonFormController(personList);
 
-        // Header
+        // Home page
+        homeView = buildHomeView();
+
+        // Manager view - Header
         Label title = new Label("Contact Manager");
         title.getStyleClass().add("app-title");
         Label subtitle = new Label("Manage your contacts with ease");
         subtitle.getStyleClass().add("app-subtitle");
         VBox headerText = new VBox(2, title, subtitle);
+        Region headerSpacer = new Region();
+        HBox.setHgrow(headerSpacer, Priority.ALWAYS);
 
-        HBox header = new HBox(headerText);
+        Button homeBtn = new Button("\u2302");
+        homeBtn.getStyleClass().add("btn-home-header");
+        homeBtn.setTooltip(new javafx.scene.control.Tooltip("Go to home page"));
+        homeBtn.setOnAction(e -> showHome());
+
+        HBox header = new HBox(headerText, headerSpacer, homeBtn);
+        header.setAlignment(Pos.CENTER_LEFT);
         header.getStyleClass().add("header");
 
         // Menu bar - application navigation
         MenuBar menuBar = new MenuBar();
         Menu fileMenu = new Menu("File");
+        MenuItem homeItem = new MenuItem("Home");
+        homeItem.setOnAction(e -> showHome());
         MenuItem refreshItem = new MenuItem("Refresh");
         refreshItem.setOnAction(e -> loadPersons());
         MenuItem exitItem = new MenuItem("Exit");
         exitItem.setOnAction(e -> primaryStage.close());
-        fileMenu.getItems().addAll(refreshItem, new SeparatorMenuItem(), exitItem);
+        fileMenu.getItems().addAll(homeItem, new SeparatorMenuItem(), refreshItem, new SeparatorMenuItem(), exitItem);
 
         Menu helpMenu = new Menu("Help");
         MenuItem aboutItem = new MenuItem("About");
@@ -168,10 +187,15 @@ public class App extends Application {
         content.setPadding(new Insets(0, 20, 10, 20));
         VBox.setVgrow(tableCard, Priority.ALWAYS);
 
-        VBox root = new VBox(menuBar, header, content);
+        managerView = new VBox(menuBar, header, content);
         VBox.setVgrow(content, Priority.ALWAYS);
 
-        Scene scene = new Scene(root, 720, 680);
+        rootStack = new StackPane(homeView);
+        rootStack.getChildren().add(managerView);
+        managerView.setVisible(false);
+        managerView.setManaged(false);
+
+        Scene scene = new Scene(rootStack, 720, 680);
         scene.getStylesheets().add(getClass().getResource("/style.css").toExternalForm());
         primaryStage.setScene(scene);
         primaryStage.setMinWidth(550);
@@ -179,6 +203,31 @@ public class App extends Application {
         primaryStage.show();
 
         personList.addListener((javafx.collections.ListChangeListener<Person>) c -> updateStats());
+    }
+
+    private VBox buildHomeView() {
+        HomePane homePane = new HomePane(
+            this::showManager,
+            () -> formController.showAddForm(primaryStage)
+        );
+        VBox.setVgrow(homePane, Priority.ALWAYS);
+        return new VBox(homePane);
+    }
+
+    private void showHome() {
+        primaryStage.setTitle("Contact App");
+        homeView.setVisible(true);
+        homeView.setManaged(true);
+        managerView.setVisible(false);
+        managerView.setManaged(false);
+    }
+
+    private void showManager() {
+        primaryStage.setTitle("Contact Manager");
+        homeView.setVisible(false);
+        homeView.setManaged(false);
+        managerView.setVisible(true);
+        managerView.setManaged(true);
     }
 
     private void updateStats() {
