@@ -7,6 +7,8 @@ import java.time.LocalDate;
 import com.contact.dao.PersonDAO;
 import com.contact.dao.PersonDAOImpl;
 import com.contact.model.Person;
+import com.contact.service.PersonService;
+import com.contact.service.PersonServiceImpl;
 
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -25,6 +27,7 @@ import javafx.stage.Stage;
 public class PersonFormController {
 
     private final PersonDAO personDAO;
+    private final PersonService personService;
 
     @FXML private TextField lastNameField;
     @FXML private TextField firstNameField;
@@ -65,10 +68,12 @@ public class PersonFormController {
 
     public PersonFormController() {
         this.personDAO = new PersonDAOImpl();
+        this.personService = new PersonServiceImpl(this.personDAO);
     }
 
     public PersonFormController(ObservableList<Person> personList) {
         this.personDAO = new PersonDAOImpl();
+        this.personService = new PersonServiceImpl(this.personDAO);
         this.personList = personList;
     }
 
@@ -174,15 +179,28 @@ public class PersonFormController {
 
         Person person = buildPersonFromFields();
         try {
-            personDAO.createPerson(person);
+            personService.create(person);
+
             showAlert(Alert.AlertType.INFORMATION, "Success",
                     person.getFullName() + " has been added.");
             clearForm();
             refreshPersonList();
             formStage.close();
+
+        } catch (IllegalStateException e) {
+            showAlert(Alert.AlertType.WARNING,
+                    "Duplicate Contact",
+                    "This contact already exists.");
+
+        } catch (IllegalArgumentException e) {
+            showAlert(Alert.AlertType.WARNING,
+                    "Validation Error",
+                    e.getMessage());
+
         } catch (SQLException e) {
-            showAlert(Alert.AlertType.ERROR, "Database Error",
-                    "Could not add person: " + e.getMessage());
+            showAlert(Alert.AlertType.ERROR,
+                    "Database Error",
+                    "Could not add person. Please try again.");
         }
     }
 
