@@ -12,4 +12,6 @@ public interface PersonDAO {
     boolean updatePerson(Person person) throws SQLException;
     boolean deletePerson(Integer id) throws SQLException;
     List<Person> searchPersonByName(String searchTerm) throws SQLException;
+    boolean existsByPhone(String phoneNumber) throws SQLException;
+    boolean existsByEmail(String emailAddress) throws SQLException;
 }

@@ -165,4 +165,28 @@ public class PersonDAOImpl implements PersonDAO {
         
         return person;
     }
+    
+    @Override
+    public boolean existsByPhone(String phoneNumber) throws SQLException {
+        String sql = "SELECT 1 FROM person WHERE TRIM(phone_number) = TRIM(?) LIMIT 1";
+        try (Connection conn = dbConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, phoneNumber);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+        }
+    }
+    
+    @Override
+    public boolean existsByEmail(String emailAddress) throws SQLException {
+        String sql = "SELECT 1 FROM person WHERE LOWER(TRIM(email_address)) = LOWER(TRIM(?)) LIMIT 1";
+        try (Connection conn = dbConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, emailAddress);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+        }
+    }
 }

@@ -83,6 +83,18 @@ class PersonServiceImplTest {
         List<Person> result = service.searchByName("   ");
         assertEquals(2, result.size());
     }
+    
+    @Test
+    void create_shouldThrow_whenPhoneDuplicate() throws SQLException {
+        Person p1 = basePerson("Doe", "John", "JD");
+        p1.setPhoneNumber("123456");
+        service.create(p1);
+
+        Person p2 = basePerson("Smith", "Ana", "AS");
+        p2.setPhoneNumber("123456");
+
+        assertThrows(IllegalStateException.class, () -> service.create(p2));
+    }
 
     @Test
     void searchByName_delegatesToDao() throws SQLException {
@@ -104,15 +116,19 @@ class PersonServiceImplTest {
      * @param nick the nickname to set
      * @return a fully initialized Person instance
      */
+    private static int seq = 1;
+
     private static Person basePerson(String last, String first, String nick) {
         Person p = new Person();
         p.setLastname(last);
         p.setFirstname(first);
         p.setNickname(nick);
         p.setAddress("Somewhere 123");
-        p.setEmailAddress("test@example.com");
-        p.setPhoneNumber("+32 123 456 789");
+        p.setEmailAddress("test" + seq + "@example.com");
+        p.setPhoneNumber("100000" + seq);
+
         p.setBirthDate(LocalDate.of(2000, 1, 1));
+        seq++;
         return p;
     }
 
@@ -240,6 +256,26 @@ class PersonServiceImplTest {
             c.setEmailAddress(p.getEmailAddress());
             c.setBirthDate(p.getBirthDate());
             return c;
+        }
+        
+        @Override
+        public boolean existsByPhone(String phoneNumber) {
+            String phone = (phoneNumber == null) ? "" : phoneNumber.trim();
+            return store.values().stream()
+                    .anyMatch(p -> {
+                        String pPhone = (p.getPhoneNumber() == null) ? "" : p.getPhoneNumber().trim();
+                        return !phone.isEmpty() && pPhone.equals(phone);
+                    });
+        }
+        
+        @Override
+        public boolean existsByEmail(String emailAddress) {
+            String email = (emailAddress == null) ? "" : emailAddress.trim().toLowerCase();
+            return store.values().stream()
+                    .anyMatch(p -> {
+                        String pEmail = (p.getEmailAddress() == null) ? "" : p.getEmailAddress().trim().toLowerCase();
+                        return !email.isEmpty() && pEmail.equals(email);
+                    });
         }
     }
 }

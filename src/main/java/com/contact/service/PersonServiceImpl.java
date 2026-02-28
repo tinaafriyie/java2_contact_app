@@ -41,6 +41,18 @@ public class PersonServiceImpl implements PersonService {
             );
         }
 
+        String phone = person.getPhoneNumber();
+        if (phone != null && !phone.trim().isEmpty() 
+                && personDAO.existsByPhone(phone)) {
+            throw new IllegalStateException("Phone number already exists.");
+        }
+
+        String email = person.getEmailAddress();
+        if (email != null && !email.trim().isEmpty() 
+                && personDAO.existsByEmail(email)) {
+            throw new IllegalStateException("Email already exists.");
+        }
+
         try {
             return personDAO.createPerson(person);
         } catch (SQLException e) {
