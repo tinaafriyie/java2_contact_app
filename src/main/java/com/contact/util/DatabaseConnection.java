@@ -13,6 +13,7 @@ public class DatabaseConnection {
             Class.forName("org.sqlite.JDBC");
             this.connection = DriverManager.getConnection(DB_URL);
             System.out.println("Database connected!");
+      
             initializeDatabase();
         } catch (Exception e) {
             System.err.println("Database connection failed!");
@@ -39,9 +40,13 @@ public class DatabaseConnection {
     }
 
     private void initializeDatabase() {
+    	System.out.println("Initializing database...");
         try {
-            InputStream is = getClass().getClassLoader().getResourceAsStream("db/init.sql");
-            if (is == null) return;
+            InputStream is = DatabaseConnection.class.getResourceAsStream("/db/init.sql");
+            if (is == null) {
+                System.out.println("INIT.SQL NOT FOUND AT RUNTIME");
+                return;
+            }
             
             BufferedReader reader = new BufferedReader(new InputStreamReader(is));
             StringBuilder sql = new StringBuilder();

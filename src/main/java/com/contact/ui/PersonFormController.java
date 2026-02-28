@@ -161,8 +161,13 @@ public class PersonFormController {
             refreshPersonList();
             formStage.close();
         } catch (SQLException e) {
-            showAlert(Alert.AlertType.ERROR, "Database Error",
-                    "Could not add person: " + e.getMessage());
+            if (e.getMessage().contains("UNIQUE constraint failed")) {
+                showAlert(Alert.AlertType.ERROR, "Duplicate Entry",
+                        "This phone number or email already exists in the database.");
+            } else {
+                showAlert(Alert.AlertType.ERROR, "Database Error",
+                        "Could not add person: " + e.getMessage());
+            }
         }
     }
 
@@ -188,8 +193,13 @@ public class PersonFormController {
                         "Could not update. Person may have been deleted.");
             }
         } catch (SQLException e) {
-            showAlert(Alert.AlertType.ERROR, "Database Error",
-                    "Could not update person: " + e.getMessage());
+            if (e.getMessage().contains("UNIQUE constraint failed")) {
+                showAlert(Alert.AlertType.ERROR, "Duplicate Entry",
+                        "This phone number or email already exists in the database.");
+            } else {
+                showAlert(Alert.AlertType.ERROR, "Database Error",
+                        "Could not add person: " + e.getMessage());
+            }
         }
     }
 
