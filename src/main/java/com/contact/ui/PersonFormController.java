@@ -42,6 +42,26 @@ public class PersonFormController {
     @FXML private Button cancelButton;
     @FXML private Button clearButton;
 
+    @FXML
+    public void initialize() {
+        // Allow only digits in phoneField
+        phoneField.textProperty().addListener((obs, oldText, newText) -> {
+            if (!newText.matches("\\d*")) {
+                phoneField.setText(newText.replaceAll("[^\\d]", ""));
+            }
+        });
+
+        // Allow only letters, spaces, hyphens, and apostrophes in name fields
+        javafx.beans.value.ChangeListener<String> nameListener = (obs, oldText, newText) -> {
+            if (!newText.matches("[a-zA-Z-' ]*")) {
+                ((TextField)((javafx.beans.property.StringProperty)obs).getBean()).setText(newText.replaceAll("[^a-zA-Z-' ]", ""));
+            }
+        };
+        lastNameField.textProperty().addListener(nameListener);
+        firstNameField.textProperty().addListener(nameListener);
+        nicknameField.textProperty().addListener(nameListener);
+    }
+
     private ObservableList<Person> personList;
     private Integer editingPersonId = null;
     private Stage formStage;
@@ -233,6 +253,13 @@ public class PersonFormController {
             return "Nickname must be 45 characters or less.";
         if (!isBlank(phoneField.getText()) && phoneField.getText().trim().length() > 15)
             return "Phone number must be 15 characters or less.";
+        if (!isBlank(phoneField.getText())) {
+            String phone = phoneField.getText().trim();
+            if (!phone.matches("^\\d+$")) {
+                phoneField.requestFocus();
+                return "Phone number must contain only digits.";
+            }
+        }
         if (!isBlank(addressField.getText()) && addressField.getText().trim().length() > 200)
             return "Address must be 200 characters or less.";
 
