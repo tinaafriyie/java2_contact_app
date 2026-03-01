@@ -1,9 +1,10 @@
-com\contact\dao\PersonDAOImpl.class
-com\contact\service\PersonServiceImpl.class
 com\contact\model\Person.class
 com\contact\util\DatabaseConnection.class
-module-info.class
 com\contact\ui\App.class
 com\contact\dao\PersonDAO.class
-com\contact\service\PersonService.class
 com\contact\ui\PersonFormController.class
+com\contact\dao\PersonDAOImpl.class
+com\contact\service\PersonServiceImpl.class
+com\contact\ui\HomePane.class
+module-info.class
+com\contact\service\PersonService.class
